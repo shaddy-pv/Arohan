@@ -32,6 +32,13 @@ const Dashboard = () => {
   const [gasHistory, setGasHistory] = useState<Array<{ time: string; mq2: number; mq135: number }>>([]);
   const [tempHistory, setTempHistory] = useState<Array<{ time: string; temp: number; humidity: number }>>([]);
   const [resendLoading, setResendLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Force re-render every second for accurate staleness checks
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const { toast } = useToast();
 
@@ -184,7 +191,7 @@ const Dashboard = () => {
 
   const handleEmergencyActivation = async () => {
     try {
-      const emergencyRef = ref(database, 'ronin/iot_nodes/iotA/emergency');
+      const emergencyRef = ref(database, 'ronin/iot/emergency');
       await update(emergencyRef, { active: true, timestamp: Date.now() });
       setEmergencyActive(true);
 
@@ -226,11 +233,13 @@ const Dashboard = () => {
     }
   };
 
-  // IoT Node status
-  const iotNodeOnline = iotReadings?.status?.online ?? false;
-  const lastHeartbeat = iotReadings?.status?.lastHeartbeat
-    ? new Date(iotReadings.status.lastHeartbeat).toLocaleTimeString()
-    : 'Never';
+  // IoT Node status — staleness check using local timestamp
+  const iotLastDate = iotReadings?._localTimestamp ? new Date(iotReadings._localTimestamp) : null;
+  // Use currentTime instead of Date.now() so the component re-evaluates staleness every second
+  const iotStaleSec = iotLastDate ? (currentTime - iotLastDate.getTime()) / 1000 : Infinity;
+  // Consider offline if no heartbeat in 15 seconds
+  const iotNodeOnline = (iotReadings?.status?.online ?? false) && iotStaleSec < 15;
+  const lastHeartbeat = iotLastDate ? iotLastDate.toLocaleTimeString() : 'Never';
 
   // Rover mode and status
   const roverMode = roverControl?.mode ?? 'manual';
@@ -318,8 +327,8 @@ const Dashboard = () => {
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">AROHAN Command Center</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {iotReadings?.status?.lastHeartbeat 
-                ? `Last data: ${new Date(iotReadings.status.lastHeartbeat).toLocaleString()}`
+              {iotLastDate 
+                ? `Last data: ${iotLastDate.toLocaleString()}`
                 : `Dashboard loaded: ${new Date().toLocaleTimeString()}`
               }
             </p>

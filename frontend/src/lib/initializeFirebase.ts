@@ -17,7 +17,7 @@ export const initializeFirebaseStructure = async () => {
 
   try {
     // Initialize IoT readings
-    const iotRef = ref(database, 'ronin/iot_nodes/iotA');
+    const iotRef = ref(database, 'ronin/iot');
     await set(iotRef, generateMockIoTReadings());
 
     // Initialize Rover control

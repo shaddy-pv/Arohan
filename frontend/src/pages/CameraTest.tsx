@@ -19,7 +19,7 @@ const CameraTest: React.FC = () => {
           {/* ESP32-CAM Stream Component */}
           <div className="max-w-5xl mx-auto">
             <SimpleMjpegStream
-              streamUrl="http://192.168.1.22:81/stream"
+              streamUrl={`${import.meta.env.VITE_ESP32_BASE_URL || 'http://192.168.137.247:81'}/stream`}
               nodeId="test-node"
               roverId="test-rover"
               showControls={true}
@@ -64,7 +64,7 @@ const CameraTest: React.FC = () => {
                 with face detection capabilities.
               </p>
               <p>
-                <strong>ESP32-CAM URL:</strong> http://192.168.1.22/stream
+                <strong>ESP32-CAM URL:</strong> http://192.168.137.247:81/stream
                 (configurable via VITE_ESP32_BASE_URL in .env)
               </p>
               <p>

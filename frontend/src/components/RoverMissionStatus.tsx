@@ -30,6 +30,12 @@ export const RoverMissionStatus = () => {
   const [roverControl, setRoverControl] = useState<any>(null);
   const [roverStatus, setRoverStatus] = useState<any>(null);
   const [lastAlert, setLastAlert] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Subscribe to rover control
   useEffect(() => {
@@ -311,7 +317,7 @@ export const RoverMissionStatus = () => {
             <div>
               <div className="text-muted-foreground">Connection</div>
               <div className="font-semibold">
-                {roverStatus?.online ? (
+                {(roverStatus?.online && roverStatus?.lastHeartbeat && (currentTime - roverStatus.lastHeartbeat) / 1000 < 15) ? (
                   <span className="text-safe">Online</span>
                 ) : (
                   <span className="text-danger">Offline</span>

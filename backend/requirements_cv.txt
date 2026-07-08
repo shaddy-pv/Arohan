@@ -15,3 +15,6 @@ face-recognition
 
 # Optional: Firebase snapshot upload + alert sync
 firebase-admin
+
+# Twilio WhatsApp messaging
+twilio

@@ -12,10 +12,22 @@ interface SystemLog {
 export const SystemHealthPanel = () => {
   const { iotReadings, roverStatus, dbConnected } = useFirebase();
   const [systemLogs, setSystemLogs] = useState<SystemLog[]>([]);
+  const [currentTime, setCurrentTime] = useState(Date.now());
 
-  // IoT and Rover online status
-  const iotOnline = iotReadings?.status?.online ?? false;
-  const roverOnline = roverStatus?.online ?? false;
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // IoT staleness check
+  const iotLastDate = iotReadings?._localTimestamp ? new Date(iotReadings._localTimestamp) : null;
+  const iotStaleSec = iotLastDate ? (currentTime - iotLastDate.getTime()) / 1000 : Infinity;
+  const iotOnline = (iotReadings?.status?.online ?? false) && iotStaleSec < 15;
+
+  // Rover staleness check
+  const roverHeartbeat = roverStatus?.lastHeartbeat || 0;
+  const roverStaleSec = roverHeartbeat > 0 ? (currentTime - roverHeartbeat) / 1000 : Infinity;
+  const roverOnline = (roverStatus?.online ?? false) && roverStaleSec < 15;
 
   // Generate system logs based on status changes
   useEffect(() => {

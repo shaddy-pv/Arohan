@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { RoverAlert, RoverAlertType } from '@/types/alerts';
 
 interface UseRoverAlertsReturn {
@@ -152,11 +152,22 @@ export const useRoverAlerts = (): UseRoverAlertsReturn => {
     setAlerts(prev => prev.filter(alert => alert.id !== id));
   }, []);
 
+  // Deduplicate alerts by ID before exposing to consumers.
+  // Race conditions between localStorage hydration, backend polling,
+  // and Firebase push can produce entries with the same id.
+  const dedupedAlerts = useMemo(() => {
+    const seen = new Map<string, RoverAlert>();
+    for (const a of alerts) {
+      if (!seen.has(a.id)) seen.set(a.id, a);
+    }
+    return Array.from(seen.values());
+  }, [alerts]);
+
   // Get recent alerts (last 3)
-  const recentAlerts = alerts.slice(0, 3);
+  const recentAlerts = dedupedAlerts.slice(0, 3);
 
   return {
-    alerts,
+    alerts: dedupedAlerts,
     recentAlerts,
     addAlert,
     clearAlerts,

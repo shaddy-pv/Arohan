@@ -10,8 +10,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useFirebase } from "@/contexts/FirebaseContext";
 import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
-import { ref, set, update } from "firebase/database";
+import { ref, set, update, onValue, off } from "firebase/database";
 import { database } from "@/lib/firebase";
+import { updateWhatsAppSettings } from "@/lib/firebaseService";
 
 const SettingsPage = () => {
   const { toast } = useToast();
@@ -30,6 +31,13 @@ const SettingsPage = () => {
   const [dispatchDelay, setDispatchDelay] = useState([10]);
   const [maxInvestigationTime, setMaxInvestigationTime] = useState([15]);
   const [returnToBase, setReturnToBase] = useState(true);
+
+  // WhatsApp notification state
+  const [whatsappEnabled, setWhatsappEnabled] = useState(true);
+  const [whatsappRecipient, setWhatsappRecipient] = useState('9555971850');
+  const [whatsappMinSeverity, setWhatsappMinSeverity] = useState<'low' | 'medium' | 'high' | 'critical'>('low');
+  const [whatsappTestLoading, setWhatsappTestLoading] = useState(false);
+  const [whatsappLogs, setWhatsappLogs] = useState<any[]>([]);
 
   // System info state
   const [systemInfo, setSystemInfo] = useState({
@@ -56,8 +64,34 @@ const SettingsPage = () => {
       setDispatchDelay([Math.floor((settings.roverBehavior?.checkDuration || 10) / 1)]);
       setMaxInvestigationTime([Math.floor((settings.roverBehavior?.checkDuration || 300) / 60)]);
       setReturnToBase(settings.roverBehavior?.returnToBaseAfterCheck ?? true);
+
+      // WhatsApp settings
+      if (settings.whatsappNotifications) {
+        setWhatsappEnabled(settings.whatsappNotifications.enabled ?? true);
+        setWhatsappRecipient(settings.whatsappNotifications.recipientNumber || '9555971850');
+        setWhatsappMinSeverity(settings.whatsappNotifications.minSeverity || 'low');
+      }
     }
   }, [settings]);
+
+  // Subscribe to WhatsApp logs
+  useEffect(() => {
+    const logsRef = ref(database, 'ronin/whatsapp_logs');
+    const unsubscribe = onValue(logsRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        const logs = Object.entries(val)
+          .map(([key, value]: [string, any]) => ({ id: key, ...value }))
+          .sort((a: any, b: any) => b.timestamp - a.timestamp)
+          .slice(0, 5);
+        setWhatsappLogs(logs);
+      } else {
+        setWhatsappLogs([]);
+      }
+    });
+
+    return () => off(logsRef);
+  }, []);
 
   // Load system info from Firebase
   useEffect(() => {
@@ -181,6 +215,108 @@ const SettingsPage = () => {
     }
   };
 
+  // WhatsApp notification handlers
+  const handleWhatsappEnabledChange = async (checked: boolean) => {
+    setWhatsappEnabled(checked);
+    try {
+      await updateWhatsAppSettings({ enabled: checked });
+      toast({
+        title: checked ? "📱 WhatsApp Alerts Enabled" : "📵 WhatsApp Alerts Disabled",
+        description: checked
+          ? "You will receive WhatsApp messages when thresholds are breached"
+          : "WhatsApp notifications are now turned off"
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update WhatsApp settings",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleWhatsappRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setWhatsappRecipient(value);
+  };
+
+  const handleWhatsappRecipientSave = async () => {
+    if (whatsappRecipient.length !== 10) {
+      toast({
+        title: "Invalid Number",
+        description: "Please enter a valid 10-digit phone number",
+        variant: "destructive"
+      });
+      return;
+    }
+    try {
+      await updateWhatsAppSettings({ recipientNumber: whatsappRecipient });
+      toast({
+        title: "Recipient Updated",
+        description: `WhatsApp alerts will be sent to +91${whatsappRecipient}`
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: "Failed to save recipient number",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleWhatsappSeverityChange = async (severity: 'low' | 'medium' | 'high' | 'critical') => {
+    setWhatsappMinSeverity(severity);
+    try {
+      await updateWhatsAppSettings({ minSeverity: severity });
+      toast({
+        title: "Severity Filter Updated",
+        description: `Only ${severity}+ severity alerts will trigger WhatsApp`
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update severity filter",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSendTestWhatsApp = async () => {
+    setWhatsappTestLoading(true);
+    try {
+      // Call the local CV backend endpoint for testing
+      const response = await fetch(
+        `${import.meta.env.VITE_CV_BACKEND_URL || 'http://localhost:5000'}/send-test-whatsapp`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "✅ Test Message Sent!",
+          description: `WhatsApp message delivered (SID: ${result.messageSid?.slice(-8) || 'N/A'})`
+        });
+      } else {
+        toast({
+          title: "❌ Test Failed",
+          description: result.message || "Could not send test message",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "❌ Connection Failed",
+        description: "Could not reach the WhatsApp service. Make sure Cloud Functions are deployed.",
+        variant: "destructive"
+      });
+    } finally {
+      setWhatsappTestLoading(false);
+    }
+  };
+
   // Simulation functions
   const simulateGasAlert = async () => {
     try {
@@ -192,7 +328,7 @@ const SettingsPage = () => {
       });
 
       // Update hazard score for demo
-      const iotRef = ref(database, 'ronin/iot_nodes/iotA');
+      const iotRef = ref(database, 'ronin/iot');
       await update(iotRef, {
         mq2: 650,
         mq135: 850,
@@ -223,7 +359,7 @@ const SettingsPage = () => {
       });
 
       // Update hazard score for demo
-      const iotRef = ref(database, 'ronin/iot_nodes/iotA');
+      const iotRef = ref(database, 'ronin/iot');
       await update(iotRef, {
         flame: true,
         temperature: 38,
@@ -262,6 +398,11 @@ const SettingsPage = () => {
           autoDispatchThreshold: 60,
           returnToBaseAfterCheck: true,
           checkDuration: 300
+        },
+        whatsappNotifications: {
+          enabled: true,
+          recipientNumber: '9555971850',
+          minSeverity: 'low'
         }
       };
 
@@ -421,6 +562,118 @@ const SettingsPage = () => {
                 </div>
                 <Switch checked={returnToBase} onCheckedChange={handleReturnToBaseChange} />
               </div>
+            </div>
+          </Card>
+
+          {/* WhatsApp Notifications */}
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <span className="text-2xl">📱</span>
+              <h2 className="text-lg font-bold">WhatsApp Notifications</h2>
+            </div>
+
+            <div className="space-y-4 sm:space-y-6">
+              {/* Enable/Disable Toggle */}
+              <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
+                <div>
+                  <Label>Enable WhatsApp Alerts</Label>
+                  <p className="text-sm text-muted-foreground">Send threshold alerts via WhatsApp (Twilio)</p>
+                </div>
+                <Switch checked={whatsappEnabled} onCheckedChange={handleWhatsappEnabledChange} />
+              </div>
+
+              {/* Recipient Number */}
+              <div>
+                <Label className="mb-2 block">Recipient Phone Number</Label>
+                <div className="flex gap-2">
+                  <div className="flex items-center gap-1 px-3 bg-secondary rounded-lg text-sm text-muted-foreground">
+                    +91
+                  </div>
+                  <input
+                    type="tel"
+                    value={whatsappRecipient}
+                    onChange={handleWhatsappRecipientChange}
+                    placeholder="Enter 10-digit number"
+                    className="flex-1 px-3 py-2 bg-secondary rounded-lg text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                    maxLength={10}
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleWhatsappRecipientSave}
+                  >
+                    Save
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  WhatsApp number that will receive safety alerts
+                </p>
+              </div>
+
+              {/* Minimum Severity */}
+              <div>
+                <Label className="mb-2 block">Minimum Severity for WhatsApp</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(['low', 'medium', 'high', 'critical'] as const).map((severity) => {
+                    const emoji = { low: '🟢', medium: '🟡', high: '🟠', critical: '🔴' };
+                    const isSelected = whatsappMinSeverity === severity;
+                    return (
+                      <button
+                        key={severity}
+                        onClick={() => handleWhatsappSeverityChange(severity)}
+                        className={`p-2 rounded-lg text-xs font-medium text-center transition-all ${
+                          isSelected
+                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
+                            : 'bg-secondary hover:bg-secondary/80'
+                        }`}
+                      >
+                        {emoji[severity]} {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Only alerts at or above this severity will trigger WhatsApp messages
+                </p>
+              </div>
+
+              {/* Test Message */}
+              <div className="pt-2">
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleSendTestWhatsApp}
+                  disabled={whatsappTestLoading || !whatsappEnabled}
+                >
+                  {whatsappTestLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin">⏳</span> Sending...
+                    </span>
+                  ) : (
+                    '📤 Send Test WhatsApp Message'
+                  )}
+                </Button>
+              </div>
+
+              {/* Recent WhatsApp Logs */}
+              {whatsappLogs.length > 0 && (
+                <div className="pt-2">
+                  <Label className="mb-2 block text-xs">Recent WhatsApp Messages</Label>
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                    {whatsappLogs.map((log: any) => (
+                      <div key={log.id} className="flex items-center justify-between p-2 bg-secondary/50 rounded text-xs">
+                        <div className="flex items-center gap-2">
+                          <span>{log.status === 'failed' ? '❌' : '✅'}</span>
+                          <span className="font-medium">{log.alertType}</span>
+                        </div>
+                        <span className="text-muted-foreground">
+                          {new Date(log.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 

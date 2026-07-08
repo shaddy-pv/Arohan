@@ -34,6 +34,7 @@ export interface RoverStatus {
   battery: number;
   location: string;
   online: boolean;
+  lastHeartbeat?: number;
 }
 
 export interface RoverSensors {
@@ -91,7 +92,11 @@ export const setRoverDirection = async (direction: RoverControl['direction'], sp
 };
 
 export const setRoverMode = async (mode: 'auto' | 'manual') => {
-  await updateRoverControl({ mode });
+  await updateRoverControl(
+    mode === 'manual'
+      ? { mode, direction: 'stop', speed: 0, emergency: false }
+      : { mode }
+  );
 };
 
 export const triggerEmergencyStop = async () => {
@@ -100,13 +105,43 @@ export const triggerEmergencyStop = async () => {
     speed: 0, 
     emergency: true 
   });
+  // Auto-reset emergency flag after 2 seconds so the bridge
+  // doesn't keep seeing stale emergency=true on every poll
+  setTimeout(() => {
+    updateRoverControl({ emergency: false }).catch(() => {});
+  }, 2000);
+};
+
+const normalizeRoverStatus = (value: unknown): RoverStatus | null => {
+  if (!value) return null;
+
+  if (typeof value === 'string') {
+    return {
+      online: true,
+      battery: 100,
+      location: value,
+      lastHeartbeat: Date.now(),
+    };
+  }
+
+  if (typeof value === 'object') {
+    const raw = value as Record<string, unknown>;
+    return {
+      battery: Number(raw.battery) || 0,
+      location: String(raw.location ?? raw.state ?? 'Unknown'),
+      online: Boolean(raw.online ?? true),
+      lastHeartbeat: Number(raw.lastHeartbeat) || Date.now(),
+    };
+  }
+
+  return null;
 };
 
 // Rover Status
 export const subscribeToRoverStatus = (callback: (data: RoverStatus | null) => void) => {
   const roverStatusRef = ref(database, 'ronin/rover/status');
   onValue(roverStatusRef, (snapshot) => {
-    callback(snapshot.val());
+    callback(normalizeRoverStatus(snapshot.val()));
   });
   return () => off(roverStatusRef);
 };
@@ -189,7 +224,12 @@ export const getRiskLevel = (hazardScore: number): 'SAFE' | 'WARNING' | 'DANGER'
   return 'DANGER';
 };
 
-// Settings
+export interface WhatsAppSettings {
+  enabled: boolean;
+  recipientNumber: string;
+  minSeverity: 'low' | 'medium' | 'high' | 'critical';
+}
+
 export interface SystemSettings {
   thresholds: {
     safeMax: number;
@@ -207,6 +247,7 @@ export interface SystemSettings {
     returnToBaseAfterCheck: boolean;
     checkDuration: number; // seconds
   };
+  whatsappNotifications?: WhatsAppSettings;
 }
 
 export const subscribeToSettings = (callback: (data: SystemSettings | null) => void) => {
@@ -231,3 +272,18 @@ export const updateRoverBehavior = async (behavior: Partial<SystemSettings['rove
   const behaviorRef = ref(database, 'ronin/settings/roverBehavior');
   await update(behaviorRef, behavior);
 };
+
+// WhatsApp Notification Settings
+export const updateWhatsAppSettings = async (whatsappSettings: Partial<WhatsAppSettings>) => {
+  const whatsappRef = ref(database, 'ronin/settings/whatsappNotifications');
+  await update(whatsappRef, whatsappSettings);
+};
+
+export const subscribeToWhatsAppLogs = (callback: (data: Record<string, any> | null) => void) => {
+  const logsRef = ref(database, 'ronin/whatsapp_logs');
+  onValue(logsRef, (snapshot) => {
+    callback(snapshot.val());
+  });
+  return () => off(logsRef);
+};
+

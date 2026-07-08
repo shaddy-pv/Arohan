@@ -62,7 +62,7 @@ const SolutionPage = () => {
 
   // Subscribe to live sensor data from Firebase
   useEffect(() => {
-    const sensorRef = ref(database, 'ronin/iot_nodes/iotA');
+    const sensorRef = ref(database, 'ronin/iot');
     
     const unsubscribe = onValue(sensorRef, (snapshot) => {
       const data = snapshot.val();
@@ -182,7 +182,7 @@ Based on these readings, respond with ONLY this JSON structure (no markdown, no 
     }
 
     if (!sensorData) {
-      setError('No sensor data. Check IoT connection and Firebase path /ronin/iot_nodes/iotA');
+      setError('No sensor data. Check IoT connection and Firebase path /ronin/iot');
       toast({
         title: "No Sensor Data",
         description: "Waiting for sensor readings from Firebase",

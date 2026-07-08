@@ -48,7 +48,14 @@ export const SavedPaths = () => {
     
     const unsubscribe = onValue(statusRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
+      if (typeof data === 'string') {
+        setRoverStatus({
+          online: true,
+          lastHeartbeat: Date.now(),
+          location: data,
+          battery: 100
+        });
+      } else if (data) {
         const now = Date.now();
         const lastHeartbeat = data.lastHeartbeat || 0;
         const isOnline = (now - lastHeartbeat) < 30000; // 30 seconds threshold

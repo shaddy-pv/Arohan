@@ -20,6 +20,7 @@ export interface IoTReadings {
     online: boolean;
     lastHeartbeat: number;
   };
+  _localTimestamp?: number;
   emergency: {
     active: boolean;
     timestamp: number;
@@ -28,10 +29,10 @@ export interface IoTReadings {
 
 /**
  * Hook to subscribe to live IoT readings from Firebase Realtime Database
- * @param path - Database path to subscribe to (default: /ronin/iot_nodes/iotA)
+ * @param path - Database path to subscribe to (default: /ronin/iot)
  * @returns Object containing data, loading state, and error
  */
-export const useIoTReadings = (path: string = '/ronin/iot_nodes/iotA') => {
+export const useIoTReadings = (path: string = '/ronin/iot') => {
   const [data, setData] = useState<IoTReadings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -119,6 +120,8 @@ export const useIoTReadings = (path: string = '/ronin/iot_nodes/iotA') => {
               online: Boolean(val.status?.online ?? true),
               lastHeartbeat: Number(val.status?.lastHeartbeat) || Date.now()
             },
+
+            _localTimestamp: Date.now(),
 
             // Emergency
             emergency: {

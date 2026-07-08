@@ -136,7 +136,8 @@ export async function resetMission(): Promise<void> {
   await update(controlRef, {
     mode: 'manual',
     direction: 'stop',
-    speed: 0
+    speed: 0,
+    emergency: false
   });
 }
 

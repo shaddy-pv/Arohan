@@ -1,0 +1,14 @@
+{
+  "event_id": "SIM_001",
+  "node_id": "ESP-ZoneA",
+  "timestamp": "2026-05-28T14:00:00Z",
+  "sensors": {
+    "temperature": 26.5,
+    "humidity": 45.0,
+    "gas_level_mq2": 850.0,
+    "smoke_detected": false,
+    "motion_detected": true
+  },
+  "expected_severity": "HIGH",
+  "description": "Significant gas leak with human presence (motion) detected."
+}

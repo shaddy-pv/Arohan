@@ -47,6 +47,12 @@
       "systemInfo": {
         ".read": "auth != null",
         ".write": "auth != null"
+      },
+
+      "whatsapp_logs": {
+        ".read": "auth != null",
+        ".write": true,
+        ".indexOn": ["timestamp", "alertType", "status"]
       }
     }
   }

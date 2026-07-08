@@ -78,7 +78,7 @@ class ClientMonitoringService {
    * Monitor IoT readings for hazardous conditions
    */
   private monitorHazards() {
-    const iotRef = ref(database, 'ronin/iot_nodes/iotA');
+    const iotRef = ref(database, 'ronin/iot');
 
     const unsubscribe = onValue(iotRef, (snapshot) => {
       const data = snapshot.val();
@@ -236,7 +236,7 @@ class ClientMonitoringService {
    * Monitor IoT node connection status
    */
   private monitorConnection() {
-    const onlineRef = ref(database, 'ronin/iot_nodes/iotA/status/online');
+    const onlineRef = ref(database, 'ronin/iot/status/online');
 
     const unsubscribe = onValue(onlineRef, (snapshot) => {
       const online = snapshot.val();
@@ -293,7 +293,7 @@ class ClientMonitoringService {
    */
   private async logHistory() {
     try {
-      const iotSnapshot = await get(ref(database, 'ronin/iot_nodes/iotA'));
+      const iotSnapshot = await get(ref(database, 'ronin/iot'));
       const data = iotSnapshot.val();
 
       if (!data) {
@@ -390,10 +390,11 @@ class ClientMonitoringService {
 
         // Create mission record in Firebase
         await set(ref(database, 'ronin/rover/mission'), {
-          status: 'DISPATCHED',
+          state: 'DISPATCHED',
           dispatchedAt: dispatchTime,
           reason: `High hazard score detected (${hazardScore.toFixed(1)}/100)`,
-          location: 'Investigation site',
+          target: 'Investigation site',
+          updatedAt: dispatchTime,
           progress: 0,
           hazardScore: hazardScore
         });

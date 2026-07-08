@@ -17,6 +17,11 @@ const DEFAULT_SETTINGS: SystemSettings = {
     autoDispatchThreshold: 60,
     returnToBaseAfterCheck: true,
     checkDuration: 300 // 5 minutes
+  },
+  whatsappNotifications: {
+    enabled: true,
+    recipientNumber: '9555971850',
+    minSeverity: 'low'
   }
 };
 

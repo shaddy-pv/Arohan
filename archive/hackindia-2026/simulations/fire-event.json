@@ -1,0 +1,14 @@
+{
+  "event_id": "SIM_002",
+  "node_id": "ESP-ZoneC",
+  "timestamp": "2026-05-28T14:05:00Z",
+  "sensors": {
+    "temperature": 55.2,
+    "humidity": 20.0,
+    "gas_level_mq2": 400.0,
+    "smoke_detected": true,
+    "motion_detected": false
+  },
+  "expected_severity": "CRITICAL",
+  "description": "High temperature correlated with smoke detection. Definite fire event."
+}

@@ -49,41 +49,36 @@ const RoverConsole = () => {
 
 
 
-  // Movement control function
-  const handleMove = useCallback(async (direction: 'forward' | 'back' | 'left' | 'right' | 'stop') => {
-    if (mode === 'auto') {
-      toast({
-        title: "Auto Mode Active",
-        description: "Switch to manual mode to control the rover",
-        variant: "destructive"
-      });
-      return;
-    }
+  // Movement control — fire-and-forget for zero delay
+  const handleMove = useCallback((direction: 'forward' | 'back' | 'left' | 'right' | 'stop') => {
+    if (mode === 'auto') return;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    const spd = direction === 'stop' ? 0 : speed[0];
+    // Fire-and-forget: don't await either call
+    fetch(`${backendUrl}/rover/control`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ direction, speed: spd }),
+    }).catch(() => {});
+    // Sync Firebase in background (for UI state)
+    setRoverDirection(direction, spd).catch(() => {});
+  }, [mode, speed, setRoverDirection]);
 
-    try {
-      await setRoverDirection(direction, direction === 'stop' ? 0 : speed[0]);
-    } catch (error) {
-      toast({
-        title: "Control Error",
-        description: "Failed to send command to rover",
-        variant: "destructive"
-      });
-    }
-  }, [mode, speed, setRoverDirection, toast]);
-
-  // Stop movement
-  const handleStop = useCallback(async () => {
-    try {
-      await setRoverDirection('stop', 0);
-    } catch (error) {
-      console.error('Failed to stop rover:', error);
-    }
+  // Stop movement — fire-and-forget
+  const handleStop = useCallback(() => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    fetch(`${backendUrl}/rover/stop`, { method: 'POST' }).catch(() => {});
+    setRoverDirection('stop', 0).catch(() => {});
   }, [setRoverDirection]);
 
   // Mode toggle
   const handleModeToggle = useCallback(async (newMode: 'auto' | 'manual') => {
     try {
-      await setRoverMode(newMode);
+      if (newMode === 'manual') {
+        await resetMission();
+      } else {
+        await setRoverMode(newMode);
+      }
       toast({
         title: `${newMode === 'auto' ? 'Auto' : 'Manual'} Mode Activated`,
         description: newMode === 'auto' 
@@ -162,7 +157,7 @@ const RoverConsole = () => {
         variant: "destructive"
       });
     }
-  }, [triggerEmergency, toast]);
+  }, [toast]);
 
   // Keyboard controls (WASD + Arrow Keys)
   useEffect(() => {
@@ -258,7 +253,7 @@ const RoverConsole = () => {
             {/* Left Panel - Live Camera */}
             <div className="lg:col-span-2">
               <SimpleMjpegStream
-                streamUrl={`${import.meta.env.VITE_CV_BACKEND_URL || 'http://localhost:5000'}/stream-raw`}
+                streamUrl={`${import.meta.env.VITE_ESP32_BASE_URL || 'http://192.168.137.247:81'}/stream`}
                 nodeId="rover-01"
                 roverId="rover-01"
                 showControls={true}
@@ -317,15 +312,17 @@ const RoverConsole = () => {
                   )}
                 </div>
                 
-                {/* Direction Pad */}
+                {/* Direction Pad — HOLD to move, RELEASE to stop */}
                 <div className="grid grid-cols-3 gap-2 mb-6">
                   <div></div>
                   <Button 
                     variant={currentDirection === 'forward' ? "default" : "secondary"}
                     size="lg" 
-                    className="h-16"
-                    onClick={() => handleMove('forward')}
-                    disabled={mode === 'auto' || !roverOnline}
+                    className="h-16 select-none touch-none"
+                    onPointerDown={() => handleMove('forward')}
+                    onPointerUp={() => handleStop()}
+                    onPointerLeave={() => handleStop()}
+                    disabled={mode === 'auto'}
                   >
                     <ArrowUp className="w-6 h-6" />
                   </Button>
@@ -334,9 +331,11 @@ const RoverConsole = () => {
                   <Button 
                     variant={currentDirection === 'left' ? "default" : "secondary"}
                     size="lg" 
-                    className="h-16"
-                    onClick={() => handleMove('left')}
-                    disabled={mode === 'auto' || !roverOnline}
+                    className="h-16 select-none touch-none"
+                    onPointerDown={() => handleMove('left')}
+                    onPointerUp={() => handleStop()}
+                    onPointerLeave={() => handleStop()}
+                    disabled={mode === 'auto'}
                   >
                     <ArrowLeft className="w-6 h-6" />
                   </Button>
@@ -352,9 +351,11 @@ const RoverConsole = () => {
                   <Button 
                     variant={currentDirection === 'right' ? "default" : "secondary"}
                     size="lg" 
-                    className="h-16"
-                    onClick={() => handleMove('right')}
-                    disabled={mode === 'auto' || !roverOnline}
+                    className="h-16 select-none touch-none"
+                    onPointerDown={() => handleMove('right')}
+                    onPointerUp={() => handleStop()}
+                    onPointerLeave={() => handleStop()}
+                    disabled={mode === 'auto'}
                   >
                     <ArrowRight className="w-6 h-6" />
                   </Button>
@@ -363,9 +364,11 @@ const RoverConsole = () => {
                   <Button 
                     variant={currentDirection === 'back' ? "default" : "secondary"}
                     size="lg" 
-                    className="h-16"
-                    onClick={() => handleMove('back')}
-                    disabled={mode === 'auto' || !roverOnline}
+                    className="h-16 select-none touch-none"
+                    onPointerDown={() => handleMove('back')}
+                    onPointerUp={() => handleStop()}
+                    onPointerLeave={() => handleStop()}
+                    disabled={mode === 'auto'}
                   >
                     <ArrowDown className="w-6 h-6" />
                   </Button>

@@ -1573,8 +1573,7 @@ class CVBackend:
             # Occasional debug (every 30 frames)
             self._dbg_count += 1
             if self._dbg_count % 30 == 0:
-                print(f"[FR] {[(n, f'{d:.3f}') for n, d in sorted(
-                    pn, key=lambda x: x[1])[:3]]} " f"→ {'✅' if ok else '❌'} {best}")
+                print(f"[FR] {[(n, f'{d:.3f}') for n, d in sorted(pn, key=lambda x: x[1])[:3]]} → {'✅' if ok else '❌'} {best}")
             return ok, best if ok else None, round(conf, 3)
 
         en = enc / (np.linalg.norm(enc) + 1e-9)

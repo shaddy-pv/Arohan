@@ -196,10 +196,7 @@ def send_playpath(path_name: str) -> bool:
             log.info(f"✅ Rover accepted pushed path '{path_name}': {r.text}")
             return True
         else:
-            log.error(
-                f"❌ Rover rejected pushed path '{path_name}': {
-                    r.status_code} {
-                    r.text}")
+            log.error(f"❌ Rover rejected pushed path '{path_name}': {r.status_code} {r.text}")
             return False
     except Exception as e:
         log.error(f"❌ Failed to push path to rover: {e}")

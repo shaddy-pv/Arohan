@@ -791,7 +791,8 @@ def status_display_thread():
         # movement
         if not rover_busy:
             alive = check_rover_alive()
-            log.info(f"  Rover reachable: {'\u2705' if alive else '\u274c'} ({rover_ip})")
+            icon = '\u2705' if alive else '\u274c'
+            log.info(f"  Rover reachable: {icon} ({rover_ip})")
         else:
             log.info(
                 f"  Rover busy, skipping ping to prevent jerks ({rover_ip})")

@@ -960,7 +960,8 @@ class IoTMonitor:
                 target=self._wa.call,
                 args=(
                     "Manual Emergency",
-                    "Emergency mode has been manually activated from the command center. All safety protocols are engaged."),
+                    "Emergency mode has been manually activated from the "
+                    "command center. All safety protocols are engaged."),
                 daemon=True).start()
             # Auto-dispatch Rover
             try:
@@ -1573,7 +1574,8 @@ class CVBackend:
             # Occasional debug (every 30 frames)
             self._dbg_count += 1
             if self._dbg_count % 30 == 0:
-                print(f"[FR] {[(n, f'{d:.3f}') for n, d in sorted(pn, key=lambda x: x[1])[:3]]} → {'✅' if ok else '❌'} {best}")
+                top3 = [(n, f'{d:.3f}') for n, d in sorted(pn, key=lambda x: x[1])[:3]]
+                print(f"[FR] {top3} → {'✅' if ok else '❌'} {best}")
             return ok, best if ok else None, round(conf, 3)
 
         en = enc / (np.linalg.norm(enc) + 1e-9)
@@ -1584,7 +1586,8 @@ class CVBackend:
         ok = sim >= LBP_THRESH
         self._dbg_count += 1
         if self._dbg_count % 30 == 0:
-            print(f"[LBP] {[(n, f'{s:.3f}') for n, s in sorted(pn, key=lambda x: x[1], reverse=True)[:3]]} → {'✅' if ok else '❌'} {best}")
+            top3 = [(n, f'{s:.3f}') for n, s in sorted(pn, key=lambda x: x[1], reverse=True)[:3]]
+            print(f"[LBP] {top3} → {'✅' if ok else '❌'} {best}")
         return ok, best if ok else None, round(float(sim), 3)
 
     def _process_frame(self, frame):
@@ -2048,7 +2051,8 @@ class CVBackend:
         print(f"Recognizer: {rec}")
         print(f"People    : {sorted(set(self.known_names)) or 'none'}")
         print(f"WhatsApp  : {'ACTIVE' if wa_ok else 'DISABLED'}  {TWILIO_WA_TO}")
-        print(f"Rover Ctrl: {self._rover_bridge._url} (direct HTTP + {'Firebase' if self._rover_bridge._fb_ok else 'no-FB'})")
+        fb_status = 'Firebase' if self._rover_bridge._fb_ok else 'no-FB'
+        print(f"Rover Ctrl: {self._rover_bridge._url} (direct HTTP + {fb_status})")
         print(f"RecogWorker throttled to {1 / RECOG_MIN_INTERVAL:.0f} fps max\n")
         self.app.run(host=host, port=port, debug=debug,
                      threaded=True, use_reloader=False)

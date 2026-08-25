@@ -1584,8 +1584,7 @@ class CVBackend:
         ok = sim >= LBP_THRESH
         self._dbg_count += 1
         if self._dbg_count % 30 == 0:
-            print(f"[LBP] {[(n, f'{s:.3f}') for n, s in sorted(
-                pn, key=lambda x: x[1], reverse=True)[:3]]} " f"→ {'✅' if ok else '❌'} {best}")
+            print(f"[LBP] {[(n, f'{s:.3f}') for n, s in sorted(pn, key=lambda x: x[1], reverse=True)[:3]]} → {'✅' if ok else '❌'} {best}")
         return ok, best if ok else None, round(float(sim), 3)
 
     def _process_frame(self, frame):

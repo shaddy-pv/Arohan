@@ -335,9 +335,7 @@ def monitor_mission(node_name: str):
         if r.status_code == 200:
             log.info("✅ Rover accepted Gas Follow command.")
         else:
-            log.warning(
-                f"⚠️ Rover returned {
-                    r.status_code} when starting gas follow.")
+            log.warning(f"⚠️ Rover returned {r.status_code} when starting gas follow.")
     except Exception as e:
         log.warning(f"⚠️ Failed to trigger gas follow: {e}")
 

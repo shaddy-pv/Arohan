@@ -743,9 +743,7 @@ class WhatsAppSender:
             if details.get('location'):
                 msg += f"📍 Location: {details['location']}\n"
             if details.get('temperature') is not None:
-                msg += f"🌡️ Temperature: {
-                    float(
-                        details['temperature']):.1f}°C\n"
+                msg += f"🌡️ Temperature: {float(details['temperature']):.1f}°C\n"
             if details.get('humidity') is not None:
                 msg += f"💧 Humidity: {float(details['humidity']):.1f}%\n"
             if details.get('mq2') is not None:
@@ -753,9 +751,7 @@ class WhatsAppSender:
             if details.get('mq135') is not None:
                 msg += f"🌫️ Air MQ-135: {details['mq135']} PPM\n"
             if details.get('hazardScore') is not None:
-                msg += f"☢️ Hazard Score: {
-                    float(
-                        details['hazardScore']):.1f}/100\n"
+                msg += f"☢️ Hazard Score: {float(details['hazardScore']):.1f}/100\n"
             if details.get('battery') is not None:
                 msg += f"🔋 Battery: {details['battery']}%\n"
         ts = datetime.now().strftime('%d %b %Y, %I:%M %p')

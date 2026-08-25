@@ -177,9 +177,7 @@ def send_playpath(path_name: str) -> bool:
         # IMPORTANT: Use compact separators so it matches ESP32's
         # indexOf("\"steps\":[")
         payload = json.dumps(path_data, separators=(',', ':'))
-        log.info(
-            f"  Fetched path '{path_name}' from Firebase ({
-                len(payload)} bytes)")
+        log.info(f"  Fetched path '{path_name}' from Firebase ({len(payload)} bytes)")
     except Exception as e:
         log.error(f"❌ Failed to fetch path from Firebase: {e}")
         return False

@@ -100,7 +100,7 @@ const Dashboard = () => {
         return updated.slice(-10);
       });
     }
-  }, [iotReadings?.mq2, iotReadings?.mq135_digital, iotReadings?.temperature, iotReadings?.humidity]);
+  }, [iotReadings]);
 
   // Calculate sensor risks from real data
   const sensorRisks = useMemo(() => {
@@ -449,7 +449,7 @@ const Dashboard = () => {
                     <YAxis stroke="hsl(var(--muted-foreground))" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                      formatter={(value: any, name: string) => {
+                      formatter={(value: number, name: string) => {
                         if (name === 'MQ-135 (Threshold)') {
                           return [value === 1 ? 'Alert' : 'OK', name];
                         }

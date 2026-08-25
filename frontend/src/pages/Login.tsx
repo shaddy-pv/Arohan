@@ -41,17 +41,18 @@ const Login = () => {
         description: `Welcome back, ${email}!`
       });
       navigate("/dashboard");
-    } catch (error: any) {
-      console.error("Login error:", error);
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      console.error("Login error:", err);
       let errorMessage = "Failed to login. Please try again.";
       
-      if (error.code === "auth/user-not-found") {
+      if (err.code === "auth/user-not-found") {
         errorMessage = "No account found with this email.";
-      } else if (error.code === "auth/wrong-password") {
+      } else if (err.code === "auth/wrong-password") {
         errorMessage = "Incorrect password.";
-      } else if (error.code === "auth/invalid-email") {
+      } else if (err.code === "auth/invalid-email") {
         errorMessage = "Invalid email address.";
-      } else if (error.code === "auth/too-many-requests") {
+      } else if (err.code === "auth/too-many-requests") {
         errorMessage = "Too many failed attempts. Please try again later.";
       }
       
@@ -82,13 +83,14 @@ const Login = () => {
         title: "Password Reset Email Sent",
         description: `Check your inbox at ${email} for password reset instructions.`
       });
-    } catch (error: any) {
-      console.error("Password reset error:", error);
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      console.error("Password reset error:", err);
       let errorMessage = "Failed to send password reset email.";
       
-      if (error.code === "auth/user-not-found") {
+      if (err.code === "auth/user-not-found") {
         errorMessage = "No account found with this email.";
-      } else if (error.code === "auth/invalid-email") {
+      } else if (err.code === "auth/invalid-email") {
         errorMessage = "Invalid email address.";
       }
       

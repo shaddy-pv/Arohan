@@ -9,12 +9,14 @@ Usage:
     python whatsapp_monitor.py
 """
 
-import os, time, json
+import os
+import time
 from datetime import datetime
 from typing import Dict, Optional
 
 try:
-    from dotenv import load_dotenv; load_dotenv()
+    from dotenv import load_dotenv
+    load_dotenv()
 except ImportError:
     pass
 
@@ -39,14 +41,17 @@ except ImportError:
 #  CONFIG
 # ══════════════════════════════════════════════════════════════
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', '')
-TWILIO_AUTH_TOKEN  = os.getenv('TWILIO_AUTH_TOKEN',  '')
-TWILIO_WA_FROM     = os.getenv('TWILIO_WA_FROM',     'whatsapp:+14155238886')
-TWILIO_WA_TO       = os.getenv('TWILIO_WA_TO',       '')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', '')
+TWILIO_WA_FROM = os.getenv('TWILIO_WA_FROM', 'whatsapp:+14155238886')
+TWILIO_WA_TO = os.getenv('TWILIO_WA_TO', '')
 
-FIREBASE_CRED_FILE = os.getenv('FIREBASE_CREDENTIALS', 'firebase-credentials.json')
-FIREBASE_DB_URL    = os.getenv('FIREBASE_DB_URL', 'https://ronin-80b29-default-rtdb.firebaseio.com')
-IOT_PATH           = 'ronin/iot'
-POLL_INTERVAL      = 5   # seconds
+FIREBASE_CRED_FILE = os.getenv(
+    'FIREBASE_CREDENTIALS',
+    'firebase-credentials.json')
+FIREBASE_DB_URL = os.getenv('FIREBASE_DB_URL',
+                            'https://ronin-80b29-default-rtdb.firebaseio.com')
+IOT_PATH = 'ronin/iot'
+POLL_INTERVAL = 5   # seconds
 
 # ══════════════════════════════════════════════════════════════
 #  THRESHOLD RULES
@@ -87,6 +92,8 @@ THRESHOLDS = {
 # ══════════════════════════════════════════════════════════════
 #  WHATSAPP SENDER
 # ══════════════════════════════════════════════════════════════
+
+
 class WhatsAppSender:
     def __init__(self):
         self._client = None
@@ -95,7 +102,8 @@ class WhatsAppSender:
 
         if TWILIO_OK:
             try:
-                self._client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+                self._client = TwilioClient(
+                    TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
                 print(f"✅ Twilio ready → {TWILIO_WA_TO}")
             except Exception as e:
                 print(f"❌ Twilio init failed: {e}")
@@ -112,9 +120,15 @@ class WhatsAppSender:
             print(f"⏳ Cooldown active for '{alert_type}' — skipped")
             return False
 
-        emoji = {'low': '🟢', 'medium': '🟡', 'high': '🟠', 'critical': '🔴'}.get(severity, '⚪')
+        emoji = {
+            'low': '🟢',
+            'medium': '🟡',
+            'high': '🟠',
+            'critical': '🔴'}.get(
+            severity,
+            '⚪')
 
-        msg  = f"🚨 *AROHAN ALERT — {alert_type}*\n"
+        msg = f"🚨 *AROHAN ALERT — {alert_type}*\n"
         msg += "━━━━━━━━━━━━━━━━━\n"
         msg += f"Severity: {emoji} {severity.upper()}\n"
 

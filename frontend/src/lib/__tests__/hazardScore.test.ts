@@ -5,3 +5,4 @@ import {
   normalize, 
   getSensorContribution,
   DEFAULT_SENSOR_RANGES 
+} from '../hazardScore';

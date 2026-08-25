@@ -1,5 +1,3 @@
-import io
-
 with open('cv_backend.py', 'r', encoding='utf-8') as f:
     lines = f.readlines()
 

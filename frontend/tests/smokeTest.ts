@@ -189,7 +189,7 @@ export function checkColorMapping(hazardScore: number, expectedColor: string): v
 
 // Export for browser console usage (DEV ONLY)
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
-    (window as any).roninSmokeTest = {
+    (window as any).arohanSmokeTest = {
         pushTestPayload,
         runSmokeTestSequence,
         verifyNormalization,
@@ -197,6 +197,6 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
         TEST_SCENARIOS
     };
 
-    console.log('[SmokeTest] 🧪 DEV MODE: Utilities loaded. Access via window.roninSmokeTest');
-    console.log('Example: window.roninSmokeTest.pushTestPayload("DANGER")');
+    console.log('[SmokeTest] 🧪 DEV MODE: Utilities loaded. Access via window.arohanSmokeTest');
+    console.log('Example: window.arohanSmokeTest.pushTestPayload("DANGER")');
 }

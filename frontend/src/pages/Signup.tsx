@@ -260,7 +260,7 @@ const Signup = () => {
                 <CheckCircle className="w-8 h-8 text-safe" />
               </div>
               <h1 className="text-3xl font-bold mb-2">Account Created!</h1>
-              <p className="text-muted-foreground">Welcome to RONIN Command Center</p>
+              <p className="text-muted-foreground">Welcome to AROHAN Command Center</p>
             </div>
 
             <div className="p-4 bg-safe/5 border border-safe/20 rounded-lg text-center">

@@ -7,6 +7,8 @@ assignees: ''
 ---
 
 ## 🚀 Feature Description
+> **Note for IEEE Summer of Code Contributors**: If you want to work on this feature, please comment indicating your interest and **wait for a maintainer to assign it to you** before starting development.
+
 A clear and concise description of the feature you'd like to see.
 
 ## 💡 Motivation / Use Case

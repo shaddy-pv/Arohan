@@ -211,7 +211,7 @@ const Dashboard = () => {
 
   // Dev-only: Simulate test payload
   // Test payload function removed - use smoke test utilities in dev console instead
-  // Access via: window.roninSmokeTest.pushTestPayload("DANGER")
+  // Access via: window.arohanSmokeTest.pushTestPayload("DANGER")
 
   const handleResendVerification = async () => {
     setResendLoading(true);

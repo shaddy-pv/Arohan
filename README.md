@@ -3,7 +3,7 @@
 [![Status](https://img.shields.io/badge/status-production-green)]()
 [![Version](https://img.shields.io/badge/version-2.0.0-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-orange)]()
-[![CI](https://github.com/shaddy-pv/ronin/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
+[![CI](https://github.com/shaddy-pv/Arohan/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
 > Real-time IoT safety monitoring with computer vision, face recognition, AI hazard scoring, and autonomous rover control.
 
@@ -66,7 +66,7 @@
 ## 📁 Repository Structure
 
 ```
-ronin/
+Arohan/
 ├── frontend/                  → React 18 + TypeScript dashboard (Vite)
 │   ├── src/
 │   │   ├── components/        → 25+ reusable UI components
@@ -136,8 +136,8 @@ ronin/
 ### 1. Clone
 
 ```bash
-git clone https://github.com/shaddy-pv/ronin.git
-cd ronin
+git clone https://github.com/shaddy-pv/Arohan.git
+cd Arohan
 ```
 
 ### 2. Frontend
@@ -268,7 +268,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 - 🌐 **Live Demo**: [arohan-ruby.vercel.app](https://arohan-ruby.vercel.app/)
 - 🎥 **Demo Video**: [Drive](https://drive.google.com/file/d/1I-GsaEnuhVUpobU__CI98upZ1kNSIQ63/view?usp=sharing)
 - 🤗 **Dataset**: [HuggingFace](https://huggingface.co/datasets/shaddy-pv/arohan-hazard-detection-dataset)
-- 🔥 **Firebase Console**: [ronin-80b29](https://console.firebase.google.com/project/ronin-80b29)
+- 🔥 **Firebase Console**: [Arohan Database](https://console.firebase.google.com/project/ronin-80b29)
 
 ---
 

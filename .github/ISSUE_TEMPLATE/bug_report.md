@@ -7,6 +7,8 @@ assignees: ''
 ---
 
 ## 🐛 Bug Description
+> **Note for IEEE Summer of Code Contributors**: If you want to fix this bug, please comment indicating your interest and **wait for a maintainer to assign it to you** before starting development.
+
 A clear and concise description of what the bug is.
 
 ## 🔁 Steps to Reproduce

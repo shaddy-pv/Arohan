@@ -12,7 +12,7 @@
 
 ```bash
 git clone <repository-url>
-cd ronin
+cd Arohan
 ```
 
 ## Step 2: Firebase Setup
@@ -339,7 +339,7 @@ After=network.target
 [Service]
 Type=simple
 User=arohan
-WorkingDirectory=/home/arohan/ronin/backend
+WorkingDirectory=/home/arohan/Arohan/backend
 Environment="PATH=/home/arohan/venv/bin"
 ExecStart=/home/arohan/venv/bin/python cv_backend.py
 Restart=always

@@ -30,12 +30,12 @@ Be respectful, inclusive, and constructive. We follow the [Contributor Covenant]
 1. **Fork** the repository on GitHub
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/ronin.git
-   cd ronin
+   git clone https://github.com/YOUR_USERNAME/Arohan.git
+   cd Arohan
    ```
 3. **Add the upstream remote:**
    ```bash
-   git remote add upstream https://github.com/shaddy-pv/ronin.git
+   git remote add upstream https://github.com/shaddy-pv/Arohan.git
    ```
 4. **Set up your environment** — see [Development Setup](#development-setup)
 
@@ -93,6 +93,15 @@ docs(api): add WebSocket event reference
 
 ## 🔄 Pull Request Process
 
+**IMPORTANT IEEE CONTRIBUTION WORKFLOW:**
+Before you start any development work for the IEEE Summer of Code:
+1. Review available GitHub Issues.
+2. Comment on the issue indicating your interest.
+3. **Wait for the Project Admin/Maintainer to assign the issue to you.**
+4. Do not start development on an issue until it has been assigned to you.
+5. Work on one assigned issue at a time.
+
+Once you have been assigned an issue, follow these steps:
 1. Sync your fork with upstream before starting:
    ```bash
    git fetch upstream
@@ -100,12 +109,13 @@ docs(api): add WebSocket event reference
    git merge upstream/main
    ```
 2. Create your feature branch from `main`
-3. Write/update tests where applicable
-4. Ensure the frontend builds: `cd frontend && npm run build`
-5. Update docs if your change affects behaviour or API
-6. Open a PR against the `main` branch
-7. Fill in the PR template completely
-8. Request review from a maintainer
+3. Implement and test your change
+4. Write/update tests where applicable
+5. Ensure the frontend builds: `cd frontend && npm run build`
+6. Update docs if your change affects behaviour or API
+7. Open a PR against the `main` branch, referencing the issue (e.g. "Fixes #12")
+8. Fill in the PR template completely
+9. Request review from a maintainer and address review comments if necessary
 
 PRs will be merged once:
 - ✅ CI checks pass
@@ -150,7 +160,7 @@ See `backend/known_faces/README.md` for the exact structure.
 ## 📁 Project Structure
 
 ```
-ronin/
+Arohan/
 ├── frontend/           # React 18 + TypeScript dashboard
 │   ├── src/
 │   │   ├── components/ # Reusable UI components

@@ -22,6 +22,7 @@ Closes #<!-- issue number -->
 <!-- If this is a UI change, add before/after screenshots. -->
 
 ## ✅ Checklist
+- [ ] I was assigned to this issue by a maintainer before starting work (for IEEE Summer of Code)
 - [ ] My code follows the project's style and conventions
 - [ ] I've added/updated relevant documentation
 - [ ] I've checked that no secrets or credentials are included

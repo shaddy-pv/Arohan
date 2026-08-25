@@ -396,9 +396,7 @@ def start_confirm_countdown(node_name: str):
             f"✅ '{n}' confirmed after {CONFIRM_DELAY}s — DISPATCHING rover!")
         if n not in [q for q in dispatch_queue.queue]:
             dispatch_queue.put(n)
-            log.info(
-                f"  Added '{n}' to dispatch queue (queue size: {
-                    dispatch_queue.qsize()})")
+            log.info(f"  Added '{n}' to dispatch queue (queue size: {dispatch_queue.qsize()})")
         else:
             log.info(f"  '{n}' already in dispatch queue, skipping duplicate")
 
@@ -785,9 +783,7 @@ def status_display_thread():
     while True:
         time.sleep(30)
         log.info("─" * 50)
-        log.info(
-            f"STATUS | Queue: {
-                dispatch_queue.qsize()} | Rover busy: {rover_busy}")
+        log.info(f"STATUS | Queue: {dispatch_queue.qsize()} | Rover busy: {rover_busy}")
         log.info(f"  Nodes tracked: {list(active_listeners.keys())}")
         log.info(f"  Known paths: {known_paths}")
 
@@ -795,9 +791,7 @@ def status_display_thread():
         # movement
         if not rover_busy:
             alive = check_rover_alive()
-            log.info(
-                f"  Rover reachable: {
-                    '✅' if alive else '❌'} ({rover_ip})")
+            log.info(f"  Rover reachable: {'\u2705' if alive else '\u274c'} ({rover_ip})")
         else:
             log.info(
                 f"  Rover busy, skipping ping to prevent jerks ({rover_ip})")

@@ -1946,8 +1946,7 @@ class CVBackend:
     def _stream_alert(self, face, all_faces, ann, fc):
         ts = datetime.now().isoformat()
         tp = 'KNOWN_FACE' if face['is_known'] else 'UNKNOWN_FACE'
-        msg = f"Known: {
-            face['name']}" if face['is_known'] else "Unknown person"
+        msg = f"Known: {face['name']}" if face['is_known'] else "Unknown person"
         fname = f"snap_{int(time.time())}_{fc}.jpg"
         url = f"{BACKEND_URL}/static/snapshots/{fname}"
         a = RoverAlert(id=f"a_{int(time.time() * 1000)}_{fc}_{uuid.uuid4().hex[:8]}",
@@ -2048,16 +2047,9 @@ class CVBackend:
         print(f"Detector  : {self.det_mode.upper()}")
         print(f"Recognizer: {rec}")
         print(f"People    : {sorted(set(self.known_names)) or 'none'}")
-        print(
-            f"WhatsApp  : {
-                'ACTIVE' if wa_ok else 'DISABLED'}  {TWILIO_WA_TO}")
-        print(
-            f"Rover Ctrl: {
-                self._rover_bridge._url} (direct HTTP + {
-                'Firebase' if self._rover_bridge._fb_ok else 'no-FB'})")
-        print(
-            f"RecogWorker throttled to {
-                1 / RECOG_MIN_INTERVAL:.0f} fps max\n")
+        print(f"WhatsApp  : {'ACTIVE' if wa_ok else 'DISABLED'}  {TWILIO_WA_TO}")
+        print(f"Rover Ctrl: {self._rover_bridge._url} (direct HTTP + {'Firebase' if self._rover_bridge._fb_ok else 'no-FB'})")
+        print(f"RecogWorker throttled to {1 / RECOG_MIN_INTERVAL:.0f} fps max\n")
         self.app.run(host=host, port=port, debug=debug,
                      threaded=True, use_reloader=False)
 

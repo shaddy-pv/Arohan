@@ -11,9 +11,14 @@ import {
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 
+const GUEST_STORAGE_KEY = 'arohan_guest_mode';
+
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
+  isGuest: boolean;
+  continueAsGuest: () => void;
+  exitGuest: () => void;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
@@ -34,27 +39,64 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isGuest, setIsGuest] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem(GUEST_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [loading, setLoading] = useState(true);
   const auth = getAuth(app);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      if (user) {
+        // Real user signed in, clear guest mode
+        setIsGuest(false);
+        try {
+          sessionStorage.removeItem(GUEST_STORAGE_KEY);
+        } catch (e) {
+          console.warn('Failed to clear guest session:', e);
+        }
+      }
       setLoading(false);
     });
 
     return unsubscribe;
   }, [auth]);
 
+  const continueAsGuest = () => {
+    try {
+      sessionStorage.setItem(GUEST_STORAGE_KEY, 'true');
+    } catch (e) {
+      console.warn('Failed to save guest session:', e);
+    }
+    setIsGuest(true);
+  };
+
+  const exitGuest = () => {
+    try {
+      sessionStorage.removeItem(GUEST_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Failed to clear guest session:', e);
+    }
+    setIsGuest(false);
+  };
+
   const login = async (email: string, password: string) => {
+    exitGuest();
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signup = async (email: string, password: string) => {
+    exitGuest();
     return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {
+    exitGuest();
     await signOut(auth);
   };
 
@@ -63,12 +105,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const sendVerificationEmail = async () => {
-    // Get the current user from auth directly (more reliable than state)
     const user = auth.currentUser;
-    
     if (user) {
-      // Send without actionCodeSettings - simpler and more reliable
-      // Firebase will use default settings which work better
       await sendEmailVerification(user);
     } else {
       throw new Error('No user is currently logged in');
@@ -80,6 +118,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value: AuthContextType = {
     currentUser,
     loading,
+    isGuest,
+    continueAsGuest,
+    exitGuest,
     login,
     signup,
     logout,

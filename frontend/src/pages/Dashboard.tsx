@@ -23,6 +23,7 @@ import { getRiskLevel, getSensorContribution } from "@/lib/hazardScore";
 import { ref, update, set } from "firebase/database";
 import { database } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [hazardScoreModalOpen, setHazardScoreModalOpen] = useState(false);
@@ -60,7 +61,7 @@ const Dashboard = () => {
   } = useFirebase();
 
   // Get current user for email verification check
-  const { currentUser } = useAuth();
+  const { currentUser, isGuest } = useAuth();
 
   // Build chart data from history
   useEffect(() => {
@@ -322,6 +323,24 @@ const Dashboard = () => {
       <HazardAlertBanner hazardScore={hazardScore} riskLevel={riskLevel} />
 
       <main className="flex-1 overflow-auto">
+        {/* Guest Mode Indicator Banner */}
+        {isGuest && (
+          <div className="bg-amber-500/10 border-b border-amber-500/30 text-amber-400 px-4 sm:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-mono-tech">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="font-bold">GUEST SIMULATION MODE:</span>
+              <span className="text-muted-foreground hidden sm:inline">
+                Live dashboard telemetry is simulated. Physical rover controls and configuration writes are restricted.
+              </span>
+            </div>
+            <Link to="/signin">
+              <Button size="sm" variant="outline" className="h-7 text-xs border-amber-500/40 text-amber-300 hover:bg-amber-500/20">
+                Sign In as Operator
+              </Button>
+            </Link>
+          </div>
+        )}
+
         {/* Header */}
         <header className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>

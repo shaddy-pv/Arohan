@@ -2,14 +2,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { FirebaseProvider } from "@/contexts/FirebaseContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { FirebaseConnectionStatus } from "@/components/FirebaseConnectionStatus";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import GuestEntry from "./pages/GuestEntry";
 import Dashboard from "./pages/Dashboard";
 import RoverConsole from "./pages/RoverConsole";
 import SolutionPage from "./pages/SolutionPage";
@@ -32,9 +34,14 @@ const App = () => (
             <Sonner />
             <FirebaseConnectionStatus />
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/signin" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/guest" element={<GuestEntry />} />
+
+              {/* Protected Application Routes (Accessible by Authenticated Users or Guest Mode) */}
               <Route
                 path="/dashboard"
                 element={
@@ -99,7 +106,8 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+              {/* Catch-all Not Found Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>

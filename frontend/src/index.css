@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -76,4 +78,283 @@ All colors MUST be HSL.
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap');
+/* Custom engineering design tokens */
+.bg-grid-pattern {
+  background-size: 36px 36px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-subtle-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 35%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 35%, black 20%, transparent 75%);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+.font-mono-tech {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Engineering Pipeline Signal Travel & Highlight Path Animation */
+@keyframes signal-travel {
+  0% {
+    top: 0%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  2% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  85% {
+    top: 100%;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  92% {
+    top: 100%;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  97% {
+    top: 100%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  100% {
+    top: 0%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+}
+
+@keyframes path-travel-fill {
+  0% {
+    height: 0%;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  85% {
+    height: 100%;
+    opacity: 1;
+  }
+  92% {
+    height: 100%;
+    opacity: 1;
+  }
+  97% {
+    height: 100%;
+    opacity: 0;
+  }
+  100% {
+    height: 0%;
+    opacity: 0;
+  }
+}
+
+.animate-signal-travel {
+  animation: signal-travel 8s linear infinite;
+}
+
+.animate-path-fill {
+  animation: path-travel-fill 8s linear infinite;
+}
+
+/* Stage Node Number Highlight Animations (Zero Delay - Instant Snap as Dot Arrives) */
+@keyframes highlight-node-1 {
+  0%, 2% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.6);
+    transform: scale(1.12);
+  }
+  4%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-node-2 {
+  0%, 13.9% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  14%, 16% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.6);
+    transform: scale(1.12);
+  }
+  18%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-node-3 {
+  0%, 28.9% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  29%, 31% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.6);
+    transform: scale(1.12);
+  }
+  33%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-node-4 {
+  0%, 43.9% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  44%, 46% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.6);
+    transform: scale(1.12);
+  }
+  48%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-node-5 {
+  0%, 58.9% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  59%, 61% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.6);
+    transform: scale(1.12);
+  }
+  63%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-node-6 {
+  0%, 73.9% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  74%, 77% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.7);
+    transform: scale(1.15);
+  }
+  79%, 92% {
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    transform: scale(1);
+  }
+  97%, 100% {
+    color: #9ca3af;
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(23, 23, 23, 0.9);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+.animate-stage-node-1 { animation: highlight-node-1 8s linear infinite; }
+.animate-stage-node-2 { animation: highlight-node-2 8s linear infinite; }
+.animate-stage-node-3 { animation: highlight-node-3 8s linear infinite; }
+.animate-stage-node-4 { animation: highlight-node-4 8s linear infinite; }
+.animate-stage-node-5 { animation: highlight-node-5 8s linear infinite; }
+.animate-stage-node-6 { animation: highlight-node-6 8s linear infinite; }
+

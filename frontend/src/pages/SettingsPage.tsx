@@ -10,12 +10,15 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useFirebase } from "@/contexts/FirebaseContext";
 import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Terminal } from "lucide-react";
 import { ref, set, update, onValue, off } from "firebase/database";
 import { database } from "@/lib/firebase";
 import { updateWhatsAppSettings } from "@/lib/firebaseService";
 
 const SettingsPage = () => {
   const { toast } = useToast();
+  const { isGuest } = useAuth();
   const { settings, loading } = useSettings();
   const { updateThresholds, updateRoverBehavior, addAlert } = useFirebase();
 
@@ -445,6 +448,19 @@ const SettingsPage = () => {
         </header>
 
         <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
+          {/* Guest Mode Restriction Notice */}
+          {isGuest && (
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 text-amber-400">
+              <Terminal className="w-5 h-5 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-bold font-mono-tech">Settings Restricted in Guest Mode</h3>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  You are exploring AROHAN in read-only Guest Mode. Modifications to threshold sliders, rover dispatch rules, and emergency WhatsApp recipient numbers are disabled. Sign in with an operator account to save custom configurations.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Threshold Settings */}
           <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-bold mb-4 sm:mb-6">Alert Thresholds</h2>

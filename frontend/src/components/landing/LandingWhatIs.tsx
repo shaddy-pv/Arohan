@@ -99,7 +99,7 @@ export const LandingWhatIs = () => {
           <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
             AROHAN is an engineering ecosystem designed for real-world safety monitoring. In industrial plants, 
             chemical facilities, research laboratories, and remote campuses, hazardous environments require 
-            uninterrupted vigilance—yet human intervention during emergencies can be delayed, disoriented, or physically dangerous.
+            uninterrupted vigilance, yet human intervention during emergencies can be delayed, disoriented, or physically dangerous.
           </p>
           <p className="text-muted-foreground text-base leading-relaxed mt-3">
             AROHAN bridges digital detection and physical response by fusing stationary IoT sensor clusters, 
